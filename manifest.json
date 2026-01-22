@@ -1,0 +1,41 @@
+{
+    "manifest_version": 3,
+    "name": "LeetCode AI Agent",
+    "version": "1.0",
+    "description": "An AI agent to help you solve LeetCode problems.",
+    "permissions": [
+        "sidePanel",
+        "scripting",
+        "storage",
+        "activeTab"
+    ],
+    "host_permissions": [
+        "https://leetcode.com/*",
+        "https://openrouter.ai/*"
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": ["injected.js"],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_title": "Open AI Helper"
+    },
+    "side_panel": {
+        "default_path": "sidepanel.html"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://leetcode.com/problems/*"
+            ],
+            "js": [
+                "content.js"
+            ]
+        }
+    ]
+}
