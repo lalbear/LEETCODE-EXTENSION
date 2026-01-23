@@ -5,7 +5,8 @@ const sendBtn = document.getElementById('send-btn');
 const explainBtn = document.getElementById('explain-btn');
 
 // Configuration (Hardcoded)
-const apiKey = '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';
+// Configuration
+let apiKey = '';
 const selectedModel = 'xiaomi/mimo-v2-flash:free';
 
 // State
@@ -13,8 +14,50 @@ let problemContext = null;
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+    await loadSettings();
     await refreshContext();
 });
+
+// Settings Logic
+const settingsBtn = document.getElementById('settings-btn');
+const settingsModal = document.getElementById('settings-settings-modal') || document.getElementById('settings-modal');
+const saveSettingsBtn = document.getElementById('save-settings');
+const cancelSettingsBtn = document.getElementById('cancel-settings');
+const apiKeyInput = document.getElementById('api-key-input');
+
+settingsBtn.addEventListener('click', () => {
+    apiKeyInput.value = apiKey;
+    settingsModal.style.display = 'flex';
+});
+
+cancelSettingsBtn.addEventListener('click', () => {
+    settingsModal.style.display = 'none';
+});
+
+saveSettingsBtn.addEventListener('click', async () => {
+    const newKey = apiKeyInput.value.trim();
+
+    if (!newKey) {
+        alert('Please enter an API Key');
+        return;
+    }
+
+    await chrome.storage.local.set({
+        openRouterApiKey: newKey
+    });
+
+    apiKey = newKey;
+
+    settingsModal.style.display = 'none';
+    addSystemMessage('Settings saved!');
+});
+
+async function loadSettings() {
+    const data = await chrome.storage.local.get(['openRouterApiKey']);
+    if (data.openRouterApiKey) {
+        apiKey = data.openRouterApiKey;
+    }
+}
 
 // Chat Logic
 sendBtn.addEventListener('click', () => sendMessage());
@@ -40,6 +83,11 @@ async function sendMessage(manualText = null) {
     // Add user message
     addMessage(text, 'user');
     if (!manualText) userInput.value = '';
+
+    if (!apiKey) {
+        addSystemMessage("Please set your OpenRouter API Key in Settings (⚙️) to continue.");
+        return;
+    }
 
     // Refresh context if missing
     if (!problemContext) {
@@ -105,8 +153,11 @@ async function callOpenRouter(userMessage) {
     });
 
     if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error?.message || 'API request failed');
+        if (response.status === 401) {
+            throw new Error('Invalid API Key. Please check your settings.');
+        }
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error?.message || `API request failed with status ${response.status}`);
     }
 
     const data = await response.json();

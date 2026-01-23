@@ -11,6 +11,7 @@
   <div id="app">
     <header>
       <h1>LeetCode Agent</h1>
+      <button id="settings-btn" style="background:none; border:none; cursor:pointer; font-size:18px;">⚙️</button>
     </header>
 
     <div id="chat-container">
@@ -25,6 +26,27 @@
       <button id="send-btn">Send</button>
     </div>
   </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" style="display: none;">
+    <!-- styled hidden via CSS class or inline for now, but js handles toggle -->
+    <div class="modal-content">
+      <h2>Settings</h2>
+
+      <label for="api-key-input">OpenRouter API Key</label>
+      <input type="password" id="api-key-input" placeholder="sk-or-v1-...">
+      <div class="hint">Get a key from <a href="https://openrouter.ai/keys" target="_blank"
+          style="color:#007aff;">openrouter.ai</a></div>
+
+
+
+      <div class="actions">
+        <button id="cancel-settings" class="secondary">Cancel</button>
+        <button id="save-settings">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script src="sidepanel.js"></script>
 </body>
 
