@@ -7,7 +7,7 @@ const explainBtn = document.getElementById('explain-btn');
 // Configuration (Hardcoded)
 // Configuration
 let apiKey = '';
-const selectedModel = 'xiaomi/mimo-v2-flash:free';
+const selectedModel = 'moonshotai/kimi-k2:free';
 
 // State
 let problemContext = null;
